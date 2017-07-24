@@ -10,6 +10,8 @@ namespace ConsoleApp
     {
         static void Main(string[] args)
         {
+            var option = new MySqlSharp.MySqlConnectionOptions { Server = "" };
+            new MySqlSharp.MySqlDriver(option).ConnectAsync().Wait();
         }
     }
 }

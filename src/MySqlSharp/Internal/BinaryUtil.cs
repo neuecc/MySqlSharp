@@ -71,7 +71,7 @@ namespace MySqlSharp.Internal
         }
 
         [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-        public static int WriteBoolean(byte[] bytes, int offset, bool value)
+        public static int WriteBoolean(ref byte[] bytes, int offset, bool value)
         {
             EnsureCapacity(ref bytes, offset, 1);
 
@@ -84,7 +84,7 @@ namespace MySqlSharp.Internal
         /// </summary>
 
         [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-        public static void WriteBooleanUnsafe(byte[] bytes, int offset, bool value)
+        public static void WriteBooleanUnsafe(ref byte[] bytes, int offset, bool value)
         {
             bytes[offset] = (byte)(value ? 1 : 0);
         }
@@ -94,7 +94,7 @@ namespace MySqlSharp.Internal
         /// </summary>
 
         [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-        public static void WriteBooleanTrueUnsafe(byte[] bytes, int offset)
+        public static void WriteBooleanTrueUnsafe(ref byte[] bytes, int offset)
         {
             bytes[offset] = (byte)(1);
         }
@@ -104,7 +104,7 @@ namespace MySqlSharp.Internal
         /// </summary>
 
         [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-        public static void WriteBooleanFalseUnsafe(byte[] bytes, int offset)
+        public static void WriteBooleanFalseUnsafe(ref byte[] bytes, int offset)
         {
             bytes[offset] = (byte)(0);
         }
@@ -118,7 +118,7 @@ namespace MySqlSharp.Internal
 
 
         [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-        public static int WriteByte(byte[] bytes, int offset, byte value)
+        public static int WriteByte(ref byte[] bytes, int offset, byte value)
         {
             EnsureCapacity(ref bytes, offset, 1);
 
@@ -141,7 +141,7 @@ namespace MySqlSharp.Internal
         }
 
         [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-        public static int WriteBytes(byte[] bytes, int offset, byte[] value)
+        public static int WriteBytes(ref byte[] bytes, int offset, byte[] value)
         {
             EnsureCapacity(ref bytes, offset, value.Length);
             Buffer.BlockCopy(value, 0, bytes, offset, value.Length);
@@ -167,7 +167,7 @@ namespace MySqlSharp.Internal
 
 
         [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-        public static int WriteSByte(byte[] bytes, int offset, sbyte value)
+        public static int WriteSByte(ref byte[] bytes, int offset, sbyte value)
         {
             EnsureCapacity(ref bytes, offset, 1);
 
@@ -184,7 +184,7 @@ namespace MySqlSharp.Internal
 
 
         [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-        public static unsafe int WriteSingle(byte[] bytes, int offset, float value)
+        public static unsafe int WriteSingle(ref byte[] bytes, int offset, float value)
         {
             EnsureCapacity(ref bytes, offset, 4);
 
@@ -206,7 +206,7 @@ namespace MySqlSharp.Internal
         }
 
         [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-        public static unsafe int WriteDouble(byte[] bytes, int offset, double value)
+        public static unsafe int WriteDouble(ref byte[] bytes, int offset, double value)
         {
             EnsureCapacity(ref bytes, offset, 8);
 
@@ -229,7 +229,7 @@ namespace MySqlSharp.Internal
 
 
         [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-        public static unsafe int WriteInt16(byte[] bytes, int offset, short value)
+        public static unsafe int WriteInt16(ref byte[] bytes, int offset, short value)
         {
             EnsureCapacity(ref bytes, offset, 2);
 
@@ -253,7 +253,7 @@ namespace MySqlSharp.Internal
 
 
         [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-        public static unsafe int WriteInt32(byte[] bytes, int offset, int value)
+        public static unsafe int WriteInt32(ref byte[] bytes, int offset, int value)
         {
             EnsureCapacity(ref bytes, offset, 4);
 
@@ -270,7 +270,7 @@ namespace MySqlSharp.Internal
         /// </summary>
 
         [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-        public static unsafe void WriteInt32Unsafe(byte[] bytes, int offset, int value)
+        public static unsafe void WriteInt32Unsafe(ref byte[] bytes, int offset, int value)
         {
             fixed (byte* ptr = bytes)
             {
@@ -290,7 +290,7 @@ namespace MySqlSharp.Internal
 
 
         [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-        public static unsafe int WriteInt64(byte[] bytes, int offset, long value)
+        public static unsafe int WriteInt64(ref byte[] bytes, int offset, long value)
         {
             EnsureCapacity(ref bytes, offset, 8);
 
@@ -314,7 +314,7 @@ namespace MySqlSharp.Internal
 
 
         [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-        public static unsafe int WriteUInt16(byte[] bytes, int offset, ushort value)
+        public static unsafe int WriteUInt16(ref byte[] bytes, int offset, ushort value)
         {
             EnsureCapacity(ref bytes, offset, 2);
 
@@ -347,7 +347,7 @@ namespace MySqlSharp.Internal
 
 
         [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-        public static unsafe int WriteUInt32(byte[] bytes, int offset, uint value)
+        public static unsafe int WriteUInt32(ref byte[] bytes, int offset, uint value)
         {
             EnsureCapacity(ref bytes, offset, 4);
 
@@ -377,7 +377,7 @@ namespace MySqlSharp.Internal
         }
 
         [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-        public static unsafe int WriteUInt64(byte[] bytes, int offset, ulong value)
+        public static unsafe int WriteUInt64(ref byte[] bytes, int offset, ulong value)
         {
             EnsureCapacity(ref bytes, offset, 8);
 
@@ -401,9 +401,9 @@ namespace MySqlSharp.Internal
 
 
         [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-        public static int WriteChar(byte[] bytes, int offset, char value)
+        public static int WriteChar(ref byte[] bytes, int offset, char value)
         {
-            return WriteUInt16(bytes, offset, (ushort)value);
+            return WriteUInt16(ref bytes, offset, (ushort)value);
         }
 
 
@@ -415,7 +415,7 @@ namespace MySqlSharp.Internal
 
 
         [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-        public static int WriteString(byte[] bytes, int offset, string value)
+        public static int WriteString(ref byte[] bytes, int offset, string value)
         {
             var ensureSize = StringEncoding.UTF8.GetMaxByteCount(value.Length);
             EnsureCapacity(ref bytes, offset, ensureSize);
@@ -436,6 +436,17 @@ namespace MySqlSharp.Internal
             var v = StringEncoding.UTF8.GetString(bytes, offset, count);
             offset += count;
             return v;
+        }
+
+        [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+        public static int WriteNullTerminatedString(ref byte[] bytes, int offset, string value)
+        {
+            var ensureSize = StringEncoding.UTF8.GetMaxByteCount(value.Length) + 1; // + null
+            EnsureCapacity(ref bytes, offset, ensureSize);
+
+            var length = StringEncoding.UTF8.GetBytes(value, 0, value.Length, bytes, offset);
+            bytes[offset + length] = 0; // null terminate
+            return length + 1;
         }
 
         [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]

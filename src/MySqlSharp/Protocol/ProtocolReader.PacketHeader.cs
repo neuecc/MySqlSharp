@@ -9,21 +9,24 @@ namespace MySqlSharp.Protocol
     // if data-length is 0xFFFFFF, require next packet
     public struct PacketHeader
     {
-        byte[] RawBytes;
         public uint DataLength;
         public int SequenceNo;
-        public int NextOffset;
 
         public bool IsRequireReadNextPacket => DataLength == 0xFFFFFF;
 
-        public PacketHeader(byte[] bytes, int offset)
-        {
-            this.RawBytes = bytes;
-            this.DataLength = BinaryUtil.Read3BytesUInt32(bytes, offset);
-            this.SequenceNo = BinaryUtil.ReadInt32(bytes, offset + 3);
-            this.NextOffset = offset + 4;
-        }
-
         // TODO:Concatenate Next Bytes
+    }
+
+    public static partial class ProtocolReader
+    {
+        public static PacketHeader ReadPacketHeader(byte[] bytes, int offset, out int readSize)
+        {
+            readSize = 4;
+            return new PacketHeader
+            {
+                DataLength = BinaryUtil.Read3BytesUInt32(bytes, offset),
+                SequenceNo = BinaryUtil.ReadInt32(bytes, offset + 3),
+            };
+        }
     }
 }
