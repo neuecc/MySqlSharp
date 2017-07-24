@@ -1,0 +1,80 @@
+﻿<#@ template debug="false" hostspecific="false" language="C#" #>
+<#@ assembly name="System.Core" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ output extension=".cs" #>
+<#
+    var types = new[]
+    {
+        new { type = typeof(SByte), minValue = (object)SByte.MinValue, maxValue = (object)SByte.MaxValue, isUnsigned = !(SByte.MinValue < 0), maxDigits = SByte.MaxValue.ToString().Length }, 
+        new { type = typeof(Byte), minValue = (object)Byte.MinValue, maxValue = (object)Byte.MaxValue, isUnsigned = !(Byte.MinValue < 0), maxDigits = Byte.MaxValue.ToString().Length }, 
+        new { type = typeof(Int16), minValue = (object)Int16.MinValue, maxValue = (object)Int16.MaxValue, isUnsigned = !(Int16.MinValue < 0), maxDigits = Int16.MaxValue.ToString().Length }, 
+        new { type = typeof(UInt16), minValue = (object)UInt16.MinValue, maxValue = (object)UInt16.MaxValue, isUnsigned = !(UInt16.MinValue < 0), maxDigits = UInt16.MaxValue.ToString().Length }, 
+        new { type = typeof(Int32), minValue = (object)Int32.MinValue, maxValue = (object)Int32.MaxValue, isUnsigned = !(Int32.MinValue < 0), maxDigits = Int32.MaxValue.ToString().Length }, 
+        new { type = typeof(UInt32), minValue = (object)UInt32.MinValue, maxValue = (object)UInt32.MaxValue, isUnsigned = !(UInt32.MinValue < 0), maxDigits = UInt32.MaxValue.ToString().Length }, 
+        new { type = typeof(Int64), minValue = (object)Int64.MinValue, maxValue = (object)Int64.MaxValue, isUnsigned = !(Int64.MinValue < 0), maxDigits = Int64.MaxValue.ToString().Length }, 
+        new { type = typeof(UInt64), minValue = (object)UInt64.MinValue, maxValue = (object)UInt64.MaxValue, isUnsigned = !(UInt64.MinValue < 0), maxDigits = UInt64.MaxValue.ToString().Length }
+        // new { type = typeof(Single), minValue = (object)Single.MinValue, maxValue = (object)Single.MaxValue, isUnsigned = !(Single.MinValue < 0), maxDigits = Single.MaxValue.ToString().Length }, 
+        // new { type = typeof(Double), minValue = (object)Double.MinValue, maxValue = (object)Double.MaxValue, isUnsigned = !(Double.MinValue < 0), maxDigits = Double.MaxValue.ToString().Length }, 
+
+    };
+   
+    Func<Type, int, int, bool, string> f = (type, i, digits, unsigned) =>
+    {
+        return string.Join(" + ",  Enumerable.Range(0, i).Select((x, c) => $"(({type.Name})(bytes[offset{((c == 0 && !unsigned) ? "" : (unsigned ? " + " + (c + 1) : " + " + c))}] - Zero){(((i - 1 - c) == 0) ? "" : " * " + Math.Pow(10, (i - 1 - c)).ToString("0"))})"));
+    };
+#>
+using System;
+
+namespace MySqlSharp.Internal
+{
+    /// <summary>
+    /// UTF8(Ascii) ByteArray to Number Converter to avoid utf8 convert and number parsing.
+    /// </summary>
+    internal static partial class NumberConverter
+    {
+        // loop unrolling(we know number length)
+
+        const byte Minus = 45;
+        const byte Dot = 46;
+        const byte Zero = 48;
+
+<# foreach(var t in types) { #>
+        public static <#= t.type.Name #> To<#= t.type.Name #>(byte[] bytes, int offset, int count)
+        {
+            // Min: <#= t.minValue.ToString() #>
+            // Max: <#= t.maxValue.ToString() #>
+            // Digits: <#= t.maxDigits #>
+<# if(!t.isUnsigned) { #> 
+            if (bytes[offset] != Minus)
+<# } #>
+            {
+                switch (count)
+                {
+<# for(var i = 1; i <= t.maxDigits; i++) { #>
+                    case <#= i #>:
+                        return (<#= t.type #>)(<#= f(t.type, i, t.maxDigits, false) #>);
+<# } #>
+                    default:
+                        throw new ArgumentException("<#= t.type.Name #> out of range count");
+                }
+            }
+<# if(!t.isUnsigned) { #> 
+            else
+            {
+                switch (count)
+                {
+<# for(var i = 2; i <= t.maxDigits + 1; i++) { #>
+                    case <#= i #>:
+                        return (<#= t.type #>)((<#= f(t.type, i - 1, t.maxDigits, true) #>) * -1);
+<# } #>
+                    default:
+                        throw new ArgumentException("<#= t.type.Name #> out of range count");
+                }
+            }
+<# } #>
+        }
+<# } #>
+    }
+}
