@@ -11,6 +11,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MySqlSharp", "src\MySqlShar
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleApp", "sandbox\ConsoleApp\ConsoleApp.csproj", "{80F57B3B-0B21-4015-85FD-E3939FD2D7BF}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{54329216-76E4-413D-8C34-6865394E0EA2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MySqlSharp.Tests", "tests\MySqlSharp.Tests\MySqlSharp.Tests.csproj", "{028F710C-CF65-4F9B-9745-F553A464EE50}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -25,6 +29,10 @@ Global
 		{80F57B3B-0B21-4015-85FD-E3939FD2D7BF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{80F57B3B-0B21-4015-85FD-E3939FD2D7BF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{80F57B3B-0B21-4015-85FD-E3939FD2D7BF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{028F710C-CF65-4F9B-9745-F553A464EE50}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{028F710C-CF65-4F9B-9745-F553A464EE50}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{028F710C-CF65-4F9B-9745-F553A464EE50}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{028F710C-CF65-4F9B-9745-F553A464EE50}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -32,5 +40,6 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{B8E86076-6842-4B8E-82AB-41FDD9B50D25} = {AACBF108-553F-4EAB-BAB6-60E7207E987F}
 		{80F57B3B-0B21-4015-85FD-E3939FD2D7BF} = {8571C5AB-92A5-47EE-92BF-625926002001}
+		{028F710C-CF65-4F9B-9745-F553A464EE50} = {54329216-76E4-413D-8C34-6865394E0EA2}
 	EndGlobalSection
 EndGlobal
