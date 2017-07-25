@@ -47,21 +47,20 @@ if capabilities & CLIENT_CONNECT_ATTRS {
     {
         static readonly byte[] Empty23Bytes = new byte[23];
 
-        public static void WriteHandshakeResponse41(ref byte[] bytes, int offset, MySqlConnectionOptions options)
+        public static void WriteHandshakeResponse41(ref BufferWriter writer, MySqlConnectionOptions options, HandshakeV10 initialHandshake)
         {
-            offset += BinaryUtil.WriteInt32(ref bytes, offset, (int)Protocol.CapabilitiesFlags.Protocol41); // TODO:Protocol41 and others...
-            offset += BinaryUtil.WriteInt32(ref bytes, offset, 0x40000000); // size...
-            offset += BinaryUtil.WriteByte(ref bytes, offset, (byte)CharacterSet.utf8mb4_bin);
-            offset += BinaryUtil.WriteBytes(ref bytes, offset, Empty23Bytes);
-            offset += BinaryUtil.WriteNullTerminatedString(ref bytes, offset, options.UserId);
+            writer.WriteInt32((int)CapabilitiesFlags.Protocol41); // TODO
+            writer.WriteInt32(0x40000000); // size...
+            writer.WriteByte((byte)CharacterSet.utf8mb4_bin);
+            writer.WriteBytes(Empty23Bytes);
+            writer.WriteNullTerminatedString(options.UserId);
+
+            //if(
 
 
 
 
 
-
-
-            throw new NotImplementedException();
         }
     }
 }

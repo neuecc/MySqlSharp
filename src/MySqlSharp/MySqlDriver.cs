@@ -24,18 +24,30 @@ namespace MySqlSharp
 
             await client.ConnectAsync(ipAddresses, options.Port);
 
-
+            // TODO:use raw socket.
 
             var stream = client.GetStream();
 
             var buffer = new byte[1024];
             var count = stream.Read(buffer, 0, buffer.Length);
 
-            var p = ProtocolReader.ReadHandshakeV10(buffer, 0, out var readSize);
+            var reader = new BufferReader(buffer, 0, count);
+            var p = ProtocolReader.ReadHandshakeV10(ref reader);
 
             // TODO:SSL
 
+            var writer = new BufferWriter();
 
+            ProtocolWriter.WriteHandshakeResponse41(ref writer, options, p);
+
+            var writeBuffer = writer.GetBuffer();
+            stream.Write(writeBuffer.Array, writeBuffer.Offset, writeBuffer.Count);
+
+            count = stream.Read(buffer, 0, buffer.Length);
+
+
+            var reader2 = new BufferReader(buffer, 0, count);
+            var error = ProtocolReader.ReadErrorPacket(ref reader2);
 
         }
     }

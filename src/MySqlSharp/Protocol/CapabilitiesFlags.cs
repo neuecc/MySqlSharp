@@ -39,7 +39,7 @@ namespace MySqlSharp.Protocol
         /// <summary>DEPRECATED: Old flag for 4.1 protocol.</summary>
         Reserved = 16384,
         /// <summary>DEPRECATED: Old flag for 4.1 authentication.</summary>
-        Reserved2 = 32768,
+        SecureConnection = 32768,
         /// <summary>Enable/disable multi-stmt support.</summary>
         MultiStatements = (1UL << 16),
         /// <summary>Enable/disable multi-results.</summary>

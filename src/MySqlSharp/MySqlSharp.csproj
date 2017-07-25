@@ -19,6 +19,7 @@
       <DependentUpon>NumberConverter.tt</DependentUpon>
     </None>
     <None Include="Internal\NumberConverter.Float.cs" />
+    <None Include="Protocol\ProtocolReader.ErrorPacket.cs" />
   </ItemGroup>
 
   <ItemGroup>
