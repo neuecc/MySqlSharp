@@ -417,12 +417,23 @@ namespace MySqlSharp.Internal
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static unsafe uint Read3BytesUInt32(byte[] bytes, int offset)
+        public static unsafe int Read3BytesInt32(byte[] bytes, int offset)
         {
             checked
             {
-                return (uint)bytes[offset] + (uint)(bytes[offset + 1] << 8) + (uint)(bytes[offset + 2] << 16);
+                return (int)bytes[offset] + (int)(bytes[offset + 1] << 8) + (int)(bytes[offset + 2] << 16);
             }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static unsafe int Write3BytesInt32(ref byte[] bytes, int offset, int value)
+        {
+            EnsureCapacity(ref bytes, offset, 3);
+
+            bytes[offset] = unchecked((byte)value);
+            bytes[offset + 1] = unchecked((byte)(value >> 8));
+            bytes[offset + 2] = unchecked((byte)(value >> 16));
+            return 3;
         }
     }
 }

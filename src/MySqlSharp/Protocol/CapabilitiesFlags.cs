@@ -63,4 +63,12 @@ namespace MySqlSharp.Protocol
         /// <summary>Don't reset the options after an unsuccessful connect.
         RememberOptions = (1UL << 31),
     }
+
+    public static class CapabilitiesFlagsExtensions
+    {
+        public static bool HasFlag(this CapabilitiesFlags capabilities, CapabilitiesFlags flag)
+        {
+            return (capabilities & flag) != 0;
+        }
+    }
 }

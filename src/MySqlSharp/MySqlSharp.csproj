@@ -19,13 +19,15 @@
       <DependentUpon>NumberConverter.tt</DependentUpon>
     </None>
     <None Include="Internal\NumberConverter.Float.cs" />
-    <None Include="Protocol\ProtocolReader.ErrorPacket.cs" />
+    <None Include="Protocol\ProtocolReader.GenericResponsePacket.cs" />
+    <None Include="Protocol\ProtocolWriter.TextProtocolCommand.cs" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="System.Data.Common" Version="4.3.0" />
     <PackageReference Include="System.Net.NameResolution" Version="4.3.0" />
     <PackageReference Include="System.Net.Sockets" Version="4.3.0" />
+    <PackageReference Include="System.Security.Cryptography.Algorithms" Version="4.3.0" />
     <PackageReference Include="System.Threading.Tasks.Extensions" Version="4.3.0" />
   </ItemGroup>
 

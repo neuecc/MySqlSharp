@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace MySqlSharp
 {
@@ -10,21 +11,45 @@ namespace MySqlSharp
     {
         // ConcurrentQueue<MySqlDriver> pool = new ConcurrentQueue<MySqlDriver>();
 
-        readonly MySqlDriver[] pool;
+        int index;
+        readonly Queue<MySqlDriver> pool;
         readonly object getLock = new object();
         readonly object createLock = new object();
 
         public MySqlDriverPool(int maxPoolSize)
         {
-            pool = new MySqlDriver[maxPoolSize];
+            //pool = new MySqlDriver[maxPoolSize];
         }
 
         public void Rent()
         {
-
-
-
+            lock (getLock)
+            {
+                if (index == 0)
+                {
+                    // getLock[index];
+                }
+            }
         }
+
+        public ValueTask<MySqlDriver> RentAsync()
+        {
+            //var hoge = new MySqlDriver();
+
+            // pool[0] = new MySqlDriver();
+
+
+            throw new NotImplementedException();
+        }
+
+        public void Return()
+        {
+        }
+
+        public void Free()
+        {
+        }
+
 
 
         /*

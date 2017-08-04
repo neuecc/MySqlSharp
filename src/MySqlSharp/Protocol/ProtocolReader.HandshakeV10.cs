@@ -52,10 +52,8 @@ if capabilities & CLIENT_PLUGIN_AUTH {
         public byte[] StatusFlags { get; private set; }
         public string AuthPluginName { get; private set; }
 
-        public static HandshakeV10 Parse(ref BufferReader reader)
+        public static HandshakeV10 Parse(ref PacketReader reader)
         {
-            var header = ProtocolReader.ReadPacketHeader(ref reader);
-
             var handshakeV10 = new HandshakeV10();
 
             handshakeV10.ProtocolVersion = reader.ReadByte();
@@ -108,7 +106,7 @@ if capabilities & CLIENT_PLUGIN_AUTH {
 
     public static partial class ProtocolReader
     {
-        public static HandshakeV10 ReadHandshakeV10(ref BufferReader reader)
+        public static HandshakeV10 ReadHandshakeV10(ref PacketReader reader)
         {
             return HandshakeV10.Parse(ref reader);
         }
