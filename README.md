@@ -6,7 +6,7 @@ Async does not mean fast, I thought database driver is the serialization problem
 
 ![image](https://user-images.githubusercontent.com/46207/29018376-ce3ecba0-7b95-11e7-90f0-d32d7c80b04b.png)
 
-It shows 1/10 memory usage decrease.
+It shows 1/50 memory usage decrease(not optimized yet, I should reduce means perfs)
 
 Currently this driver is under development and is not filled with alpha version. However, I am glad if there is your attention and opinion.
 
@@ -48,7 +48,7 @@ Direct deserialize from binary to number
 ---
 MySQL row data is normaly text protocol. If retrieve integer, requires string encoding and parsing.
 
-```
+```csharp
 // string allocation and parsing cost
 int.Parse(Encoding.UTF8.GetString(binary));
 ```
