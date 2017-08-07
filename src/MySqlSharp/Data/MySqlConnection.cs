@@ -18,6 +18,12 @@ namespace MySqlSharp.Data
 
         public override ConnectionState State => throw new NotImplementedException();
 
+        public MySqlConnection(string connectionString)
+            : base()
+        {
+
+        }
+
         public override void ChangeDatabase(string databaseName)
         {
             throw new NotImplementedException();

@@ -66,7 +66,7 @@ namespace Benchmark
             };
 
             driver = new MySqlSharp.MySqlDriver(option);
-            driver.ConnectAsync().Wait();
+            driver.OpenAsync().Wait();
 
             var connstr1 = ";";
             var connstr2 = ";";

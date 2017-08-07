@@ -1,8 +1,12 @@
-﻿using System;
+﻿using MySqlSharp;
+using MySqlSharp.Data;
+using MySqlSharp.Protocol;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+
 
 namespace ConsoleApp
 {
@@ -18,25 +22,27 @@ namespace ConsoleApp
                 Password = "",
             };
 
-            var driver = new MySqlSharp.MySqlDriver(option);
-
-            driver.ConnectAsync().Wait();
 
 
 
 
+            //var nextReader = reader.CreateNextReader();
+            //nextReader.rea
 
 
-            //var prepare = driver.Prepare("select version() as v, 199 as num union select version(), 399");
-            var prepare = driver.Prepare("select 1");
-            var reader = driver.Execute(prepare.StatementId);
 
 
-            while (reader.Read())
-            {
-                //var a = reader.GetString(0);
-                var b = reader.GetInt32(0);
-            }
+
+            ////var prepare = driver.Prepare("select version() as v, 199 as num union select version(), 399");
+            //var prepare = driver.Prepare("select 1");
+            //var reader = driver.Execute(prepare.StatementId);
+
+
+            //while (reader.Read())
+            //{
+            //    //var a = reader.GetString(0);
+            //    var b = reader.GetInt32(0);
+            //}
 
 
 

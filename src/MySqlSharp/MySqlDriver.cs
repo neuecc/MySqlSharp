@@ -21,7 +21,13 @@ namespace MySqlSharp
             this.options = options;
         }
 
-        public async Task ConnectAsync()
+        public void Open()
+        {
+            // TODO:create sync method
+            OpenAsync().Wait();
+        }
+
+        public async Task OpenAsync()
         {
             var ipAddresses = await Dns.GetHostAddressesAsync(options.Server);
             var client = new TcpClient(AddressFamily.InterNetwork);
