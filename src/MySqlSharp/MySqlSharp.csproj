@@ -13,6 +13,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Mapper\**" />
+    <EmbeddedResource Remove="Mapper\**" />
+    <None Remove="Mapper\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Include="Internal\NumberConverter.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
@@ -20,7 +26,7 @@
     </None>
     <None Include="Internal\NumberConverter.Float.cs" />
     <None Include="Protocol\ProtocolReader.GenericResponsePacket.cs" />
-    <None Include="Protocol\ProtocolWriter.TextProtocolCommand.cs" />
+    <None Include="Protocol\ProtocolWriter.Command.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -48,10 +54,6 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>NumberConverter.tt</DependentUpon>
     </Compile>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Mapper\" />
   </ItemGroup>
 
 </Project>

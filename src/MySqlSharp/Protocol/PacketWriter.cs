@@ -13,6 +13,8 @@ namespace MySqlSharp.Protocol
         byte[] bytes;
         int offset;
 
+        public int CurrentOffset => offset;
+
         public ArraySegment<byte> GetBuffer(int sequenceId)
         {
             // Writer header
@@ -40,6 +42,17 @@ namespace MySqlSharp.Protocol
         public void EnsureCapacity(int appendLength)
         {
             BinaryUtil.EnsureCapacity(ref bytes, offset, appendLength);
+        }
+
+        public void Skip(int length)
+        {
+            BinaryUtil.EnsureCapacity(ref bytes, offset, length);
+            offset += length;
+        }
+
+        public void Seek(int offset)
+        {
+            this.offset = offset;
         }
 
         public void WriteInt32(int value)

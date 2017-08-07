@@ -23,15 +23,35 @@ namespace ConsoleApp
             driver.ConnectAsync().Wait();
 
 
-            var set = driver.Query("select version() as v, 199 as num union select version(), 399");
 
-            while (set.MoveNext())
+
+
+
+            //var prepare = driver.Prepare("select version() as v, 199 as num union select version(), 399");
+            var prepare = driver.Prepare("select 1");
+            var reader = driver.Execute(prepare.StatementId);
+
+
+            while (reader.Read())
             {
-                // set.
-
-                var s = set.GetString(0);
-                var i = set.GetInt32(1);
+                //var a = reader.GetString(0);
+                var b = reader.GetInt32(0);
             }
+
+
+
+
+            /*
+        var reader = driver.Query("select version() as v, 199 as num union select version(), 399");
+
+        while (reader.MoveNext())
+        {
+            // set.
+
+            var s = reader.GetString(0);
+            var i = reader.GetInt32(1);
+        }
+        */
         }
     }
 }

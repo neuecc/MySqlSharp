@@ -93,7 +93,7 @@ namespace MySqlSharp.Protocol
 
         public override ResponsePacketKind PacketKind => ResponsePacketKind.Error;
 
-        public int ErrorCode { get; private set; }
+        public ushort ErrorCode { get; private set; }
 
         /// <summary>SQL state</summary>
         public string State { get; private set; }
@@ -106,7 +106,7 @@ namespace MySqlSharp.Protocol
             var packet = new ErrorPacket();
 
             reader.ReadByte(); // code
-            packet.ErrorCode = (int)reader.ReadUInt16();
+            packet.ErrorCode = reader.ReadUInt16();
             var nextByte = reader.FetchNext();
             if (nextByte == '#')
             {
@@ -148,101 +148,6 @@ namespace MySqlSharp.Protocol
             return packet;
         }
     }
-
-    public class ResultSet
-    {
-        public int ColumnCount { get; private set; }
-
-        public static ResultSet Parse(ref PacketReader reader)
-        {
-            var resultSet = new ResultSet();
-
-            resultSet.ColumnCount = (int)reader.ReadLengthEncodedInteger();
-
-            // column definition
-            PacketReader columnReader = reader; // struct copy
-            for (int i = 0; i < resultSet.ColumnCount; i++)
-            {
-                columnReader = columnReader.CreateChildReader();
-
-                var todotodo = ColumnDefinition41.Parse(ref columnReader);
-            }
-
-            return resultSet;
-        }
-    }
-
-    // https://web.archive.org/web/20160604100755/http://dev.mysql.com/doc/internals/en/com-query-response.html#packet-Protocol::ColumnDefinition41
-    //lenenc_str catalog
-    //lenenc_str schema
-    //lenenc_str table
-    //lenenc_str org_table
-    //lenenc_str name
-    //lenenc_str org_name
-    //lenenc_int length of fixed-length fields[0c]
-    //2              character set
-    //4              column length
-    //1              type
-    //2              flags
-    //1              decimals
-    //2              filler[00][00]
-    //if command was COM_FIELD_LIST {
-    //    lenenc_int     length of default- values
-    //    string[$len]   default values
-    //}
-
-    public class ColumnDefinition41
-    {
-        ArraySegment<byte> catalog;
-        ArraySegment<byte> schema;
-        ArraySegment<byte> table;
-        ArraySegment<byte> originalTable;
-        ArraySegment<byte> column;
-        ArraySegment<byte> originalColumn;
-
-        public string Catalog => Encoding.UTF8.GetString(catalog.Array, catalog.Offset, catalog.Count);
-        public string Schema => Encoding.UTF8.GetString(schema.Array, schema.Offset, schema.Count);
-        public string Table => Encoding.UTF8.GetString(table.Array, table.Offset, table.Count);
-        public string OriginalTable => Encoding.UTF8.GetString(originalTable.Array, originalTable.Offset, originalTable.Count);
-        public string Column => Encoding.UTF8.GetString(column.Array, column.Offset, column.Count);
-        public string OriginalColumn => Encoding.UTF8.GetString(originalColumn.Array, originalColumn.Offset, originalColumn.Count);
-
-        // more, more...
-
-        public static ColumnDefinition41 Parse(ref PacketReader reader)
-        {
-            var def = new ColumnDefinition41();
-
-            // TODO:Array lifetime?
-            def.catalog = reader.ReadLengthEncodedStringSegment(); // always "def"
-            def.schema = reader.ReadLengthEncodedStringSegment();
-            def.table = reader.ReadLengthEncodedStringSegment();
-            def.originalTable = reader.ReadLengthEncodedStringSegment();
-            def.column = reader.ReadLengthEncodedStringSegment();
-            def.originalColumn = reader.ReadLengthEncodedStringSegment();
-
-            reader.ReadByte(); // 0x
-
-            var cset = (CharacterSet)(byte)reader.ReadUInt16();
-            var columnLen = reader.ReadInt32();
-            var cType = reader.ReadByte();
-            var cFlag = reader.ReadUInt16();
-            var decimals = reader.ReadByte(); // 0x00 for intergers and static string, 0x1f for dynamic strings, double, float, 0x00 to 0x51 for decimals
-
-            reader.ReadNext(2); // filter
-
-            // TODO:and others
-
-            return def;
-        }
-
-        public override string ToString()
-        {
-            // TODO:Type
-            return Column;
-        }
-    }
-
 
     public static partial class ProtocolReader
     {

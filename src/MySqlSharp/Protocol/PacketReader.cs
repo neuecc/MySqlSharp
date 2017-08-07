@@ -42,7 +42,7 @@ namespace MySqlSharp.Protocol
 
         // TODO:CreateAsync
 
-        public PacketReader CreateChildReader()
+        public PacketReader CreateNextReader()
         {
             return PacketReader.Create(bytes, limit, binarySegmentCount);
         }
@@ -51,7 +51,7 @@ namespace MySqlSharp.Protocol
         {
             if (Remaining < readCount)
             {
-                throw new Exception("TODO:Read Sugi");
+                throw new Exception("TODO:Read Too Much");
             }
         }
 
@@ -89,7 +89,7 @@ namespace MySqlSharp.Protocol
             return v;
         }
 
-        public int ReadInt16()
+        public short ReadInt16()
         {
             Verify(2);
             var v = BinaryUtil.ReadInt16(bytes, offset);
@@ -121,7 +121,7 @@ namespace MySqlSharp.Protocol
             return v;
         }
 
-        public uint ReadUInt16()
+        public ushort ReadUInt16()
         {
             Verify(2);
             var r = BinaryUtil.ReadUInt16(bytes, offset);
@@ -161,25 +161,31 @@ namespace MySqlSharp.Protocol
             return v;
         }
 
-        // TODO:read more spec
-        public long ReadLengthEncodedInteger()
+        // VLI
+        public long? ReadLengthEncodedInteger()
         {
             var encodedLength = bytes[offset++];
+
             switch (encodedLength)
             {
+                case 0xFB:
+                    return null;
                 case 0xFC:
-                    return ReadUInt16();
+                    return ReadInt16(); // 2byte unsigned integer
                 case 0xFD:
-                    return (long)Read3BytesInt32();
+                    return Read3BytesInt32(); // 3byte unsigned integer
                 case 0xFE:
-                    return ReadInt64();
-                case 0xFF:
-                    throw new Exception("TODO?");
+                    return ReadInt64(); // 4byte unsigned integer
                 default:
-                    return encodedLength;
+                    if (0x00 <= encodedLength && encodedLength <= 0xFA)
+                    {
+                        return encodedLength;
+                    }
+                    throw new Exception("out of range");
             }
         }
 
+        // LS
         public string ReadLengthEncodedString()
         {
             var encodedLength = ReadLengthEncodedInteger();
@@ -189,6 +195,8 @@ namespace MySqlSharp.Protocol
         // does not decode string avoid allocation
         public ArraySegment<byte> ReadLengthEncodedStringSegment()
         {
+            // TODO:null?
+
             var encodedLength = (int)ReadLengthEncodedInteger();
             var result = new ArraySegment<byte>(bytes, offset, encodedLength);
             offset += encodedLength;
@@ -203,6 +211,14 @@ namespace MySqlSharp.Protocol
         public bool IsErrorPacket()
         {
             return bytes[offset] == ErrorPacket.Code;
+        }
+
+        public void ThrowIfErrorPacket()
+        {
+            if (IsErrorPacket())
+            {
+                throw ErrorPacket.Parse(ref this).ToMySqlException();
+            }
         }
 
         public bool IsEofPacket()

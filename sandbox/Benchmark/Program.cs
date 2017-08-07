@@ -90,7 +90,7 @@ namespace Benchmark
         public void MySqlSharp()
         {
             var set = driver.Query("select Id, MasterId, TItle, MemberNum, GuildRank, MaxGuildRank from Guild where GuildRank = 0 limit 100");
-            while (set.MoveNext())
+            while (set.Read())
             {
                 var a = set.GetInt32(0);
                 var b = set.GetInt32(1);

@@ -53,7 +53,7 @@ if capabilities & CLIENT_CONNECT_ATTRS {
         {
             // writer.WriteInt32((int)CapabilitiesFlags.Protocol41); // TODO:other flags
 
-
+            // currently this code is borrowed from async MySQLConnector
 
             writer.WriteInt32((int)(
                 CapabilitiesFlags.Protocol41 |

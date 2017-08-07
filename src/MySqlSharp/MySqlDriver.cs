@@ -109,6 +109,11 @@ namespace MySqlSharp
             this.client = client;
         }
 
+        public void Dispose()
+        {
+            client.Dispose();
+        }
+
         // Command
 
         PacketReader SyncWriteAndRead(ref PacketWriter writer, int sequenceId, Stream stream)
@@ -124,6 +129,7 @@ namespace MySqlSharp
             return PacketReader.Create(buffer, 0, readCount);
         }
 
+        /// <summary>COM_PING, check if the server is alive.</summary>
         public OkPacket Ping()
         {
             using (var stream = client.GetStream())
@@ -138,6 +144,23 @@ namespace MySqlSharp
                 response.ThrowIfError();
 
                 return (OkPacket)response;
+            }
+        }
+
+        /// <summary>COM_STATISTICS, Get a human readable string of internal statistics.</summary>
+        public string Statistics()
+        {
+            using (var stream = client.GetStream())
+            {
+                var readWriteBuffer = InternalMemoryPool.GetBuffer();
+                var writer = PacketWriter.Create(readWriteBuffer);
+                ProtocolWriter.WriteStatistics(ref writer);
+
+                var reader = SyncWriteAndRead(ref writer, 0, stream);
+                reader.ThrowIfErrorPacket();
+
+                var result = reader.ReadString(reader.Remaining);
+                return result;
             }
         }
 
@@ -157,13 +180,13 @@ namespace MySqlSharp
             return set;
         }
 
-        public void Prepare(string query)
+        public StatementPrepareOk Prepare(string query)
         {
             var stream = client.GetStream();
 
             var readWriteBuffer = InternalMemoryPool.GetBuffer();
             var writer = PacketWriter.Create(readWriteBuffer);
-            ProtocolWriter.WriteQuery(ref writer, query);
+            ProtocolWriter.WritePrepareStatement(ref writer, query);
 
             var reader = SyncWriteAndRead(ref writer, 0, stream);
 
@@ -173,13 +196,28 @@ namespace MySqlSharp
                 throw ErrorPacket.Parse(ref reader).ToMySqlException();
             }
 
-            // reader.
-
+            return ProtocolReader.ReadStatementPrepareOk(ref reader);
         }
 
-        public void Dispose()
+        public BinaryResultSet Execute(int statementId, params object[] parameters) // how to avoid boxing?
         {
-            client.Dispose();
+            var stream = client.GetStream();
+
+            var readWriteBuffer = InternalMemoryPool.GetBuffer();
+            var writer = PacketWriter.Create(readWriteBuffer);
+            ProtocolWriter.WriteExecuteStatement(ref writer, statementId, parameters);
+
+            var reader = SyncWriteAndRead(ref writer, 0, stream);
+
+            // COM_STMT_PREPARE_OK on success, ERR_Packet otherwise
+            if (reader.IsErrorPacket())
+            {
+                throw ErrorPacket.Parse(ref reader).ToMySqlException();
+            }
+
+            // TODO: Ok or ResultSet?
+            var set = ProtocolReader.ReadBinaryResultSet(ref reader);
+            return set;
         }
     }
 }
