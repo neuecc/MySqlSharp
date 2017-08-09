@@ -188,6 +188,11 @@ namespace MySqlSharp
 
         public TextResultSet Query(FormattableString query)
         {
+            if (query.ArgumentCount == 0)
+            {
+                return Query(query.Format);
+            }
+
             var stream = client.GetStream();
 
             var readWriteBuffer = InternalMemoryPool.GetBuffer();
