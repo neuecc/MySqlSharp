@@ -57,6 +57,12 @@ namespace MySqlSharp.Protocol
             writer.WriteString(queryText);
         }
 
+        public static void WriteQuery(ref PacketWriter writer, char[] queryText, int count)
+        {
+            writer.WriteByte((byte)CommandId.Query);
+            writer.WriteString(queryText, count);
+        }
+
         //http://imysql.com/mysql-internal-manual/com-stmt-prepare.html
         public static void WritePrepareStatement(ref PacketWriter writer, string queryText)
         {

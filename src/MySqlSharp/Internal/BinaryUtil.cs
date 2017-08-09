@@ -383,6 +383,14 @@ namespace MySqlSharp.Internal
             return StringEncoding.UTF8.GetBytes(value, 0, value.Length, bytes, offset);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static int WriteString(ref byte[] bytes, int offset, char[] value, int charCount)
+        {
+            var ensureSize = StringEncoding.UTF8.GetMaxByteCount(charCount);
+            EnsureCapacity(ref bytes, offset, ensureSize);
+
+            return StringEncoding.UTF8.GetBytes(value, 0, charCount, bytes, offset);
+        }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static string ReadString(byte[] bytes, int offset, int count)

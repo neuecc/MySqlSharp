@@ -84,6 +84,11 @@ namespace MySqlSharp.Protocol
             offset += BinaryUtil.WriteString(ref bytes, offset, value);
         }
 
+        public void WriteString(char[] value, int count)
+        {
+            offset += BinaryUtil.WriteString(ref bytes, offset, value, count);
+        }
+
         public void WriteNullTerminatedString(string value)
         {
             offset += BinaryUtil.WriteNullTerminatedString(ref bytes, offset, value);

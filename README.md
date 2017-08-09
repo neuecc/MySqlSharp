@@ -17,6 +17,7 @@ How achive performance?
 * Direct deserialize from binary to number.
 * Avoid ADO.NET abstrtaction, expose primitive api and ADO.NET should be built on top of it.
 * Micro ORM(like Dapper) built on top of primitive MySQL API.
+* Fast query text parsing deliver with `ref char[]` buffer(don't use `StringBuilder` and `String`) - [FastQueryParser](https://github.com/neuecc/MySqlSharp/blob/master/src/MySqlSharp/Internal/FastQueryParser.cs).
 * Use prepared-statement cache like [Npgsql approach](http://www.roji.org/prepared-statements-in-npgsql-3-2).
 
 MySQL [X-Protocol](https://dev.mysql.com/doc/internals/en/x-protocol.html) increase server-client performance but [Amazon Aurora](https://aws.amazon.com/rds/aurora/details/) or others can not use X-Protocol yet.

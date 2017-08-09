@@ -9,6 +9,9 @@ namespace MySqlSharp.Internal
         [ThreadStatic]
         static byte[] buffer = null;
 
+        [ThreadStatic]
+        static char[] charBuffer = null;
+
         public static byte[] GetBuffer()
         {
             if (buffer == null)
@@ -16,6 +19,15 @@ namespace MySqlSharp.Internal
                 buffer = new byte[65536];
             }
             return buffer;
+        }
+
+        public static char[] GetCharBuffer()
+        {
+            if (charBuffer == null)
+            {
+                charBuffer = new char[65536];
+            }
+            return charBuffer;
         }
     }
 }

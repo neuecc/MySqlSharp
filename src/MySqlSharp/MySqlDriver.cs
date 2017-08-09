@@ -186,6 +186,26 @@ namespace MySqlSharp
             return set;
         }
 
+        public TextResultSet Query(FormattableString query)
+        {
+            var stream = client.GetStream();
+
+            var readWriteBuffer = InternalMemoryPool.GetBuffer();
+            var writer = PacketWriter.Create(readWriteBuffer);
+
+            var charBuffer = InternalMemoryPool.GetCharBuffer();
+            var stringCount = FastQueryParser.Parse(ref charBuffer, query);
+
+            ProtocolWriter.WriteQuery(ref writer, charBuffer, stringCount);
+
+            var reader = SyncWriteAndRead(ref writer, 0, stream);
+
+            // TODO: Ok or ResultSet?
+            var set = ProtocolReader.ReadTextResultSet(ref reader);
+
+            return set;
+        }
+
         public StatementPrepareOk Prepare(string query)
         {
             var stream = client.GetStream();
