@@ -9,19 +9,6 @@ namespace MySqlSharp.Internal
         [ThreadStatic]
         static char[] argBuffer;
 
-        static readonly bool[] requireEscapeChars;
-
-        static FastQueryParser()
-        {
-            var escapeTarget = new HashSet<char>(("\u005c\u00a5\u0160\u20a9\u2216\ufe68\uff3c" + "\u0022\u0027\u0060\u00b4\u02b9\u02ba\u02bb\u02bc\u02c8\u02ca\u02cb\u02d9\u0300\u0301\u2018\u2019\u201a\u2032\u2035\u275b\u275c\uff07").ToCharArray());
-
-            requireEscapeChars = new bool[char.MaxValue];
-            for (int i = 0; i < char.MaxValue; i++)
-            {
-                requireEscapeChars[i] = escapeTarget.Contains((char)i);
-            }
-        }
-
         public static int Parse(ref char[] buffer, FormattableString sql)
         {
             if (argBuffer == null)
@@ -71,13 +58,51 @@ namespace MySqlSharp.Internal
                     buffer[index++] = '\'';
                     for (int j = 0; j < strValue.Length; j++)
                     {
-                        if (requireEscapeChars[strValue[j]])
+                        // https://dev.mysql.com/doc/refman/5.6/en/string-literals.html#character-escape-sequences
+
+                        // mysql_real_escape_string
+                        // https://github.com/mysql/mysql-server/blob/mysql-5.7.5/mysys/charset.c#L823-L932
+                        switch (strValue[j])
                         {
-                            finalLength++;
-                            EnsureCapacity(ref buffer, finalLength);
-                            buffer[index++] = '\\';
+                            case '\0':
+                                EnsureCapacity(ref buffer, ++finalLength);
+                                buffer[index++] = '\\';
+                                buffer[index++] = '0';
+                                break;
+                            case '\n':
+                                EnsureCapacity(ref buffer, ++finalLength);
+                                buffer[index++] = '\\';
+                                buffer[index++] = 'n';
+                                break;
+                            case '\r':
+                                EnsureCapacity(ref buffer, ++finalLength);
+                                buffer[index++] = '\\';
+                                buffer[index++] = 'r';
+                                break;
+                            case '\\':
+                                EnsureCapacity(ref buffer, ++finalLength);
+                                buffer[index++] = '\\';
+                                buffer[index++] = '\\';
+                                break;
+                            case '\'':
+                                EnsureCapacity(ref buffer, ++finalLength);
+                                buffer[index++] = '\\';
+                                buffer[index++] = '\'';
+                                break;
+                            case '\"':
+                                EnsureCapacity(ref buffer, ++finalLength);
+                                buffer[index++] = '\\';
+                                buffer[index++] = '\"';
+                                break;
+                            case (char)26:
+                                EnsureCapacity(ref buffer, ++finalLength);
+                                buffer[index++] = '\\';
+                                buffer[index++] = 'Z';
+                                break;
+                            default:
+                                buffer[index++] = strValue[j];
+                                break;
                         }
-                        buffer[index++] = strValue[j];
                     }
                     buffer[index++] = '\'';
                     break;
@@ -104,6 +129,7 @@ namespace MySqlSharp.Internal
                     buffer[index++] = ')';
                     break;
                 default:
+                    // TODO:each argValue type to string, more case switch...!
                     var otherValue = argValue.ToString();
                     finalLength += otherValue.Length;
                     EnsureCapacity(ref buffer, finalLength);

@@ -1,10 +1,11 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 
 namespace MySqlSharp.Internal
 {
-    public class ParameterDictionary
+    public class ParameterDictionary : IEnumerable<KeyValuePair<string, object>>
     {
         struct Entry
         {
@@ -200,6 +201,19 @@ namespace MySqlSharp.Internal
             }
 
             return capacity;
+        }
+
+        public IEnumerator<KeyValuePair<string, object>> GetEnumerator()
+        {
+            for (int i = 0; i < count; i++)
+            {
+                yield return new KeyValuePair<string, object>(entries[i].Key, entries[i].Value);
+            }
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
     }
 }
