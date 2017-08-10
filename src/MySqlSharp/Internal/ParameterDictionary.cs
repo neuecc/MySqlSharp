@@ -115,7 +115,7 @@ namespace MySqlSharp.Internal
                     lastIndex = i;
                 }
 
-                var entry = new Entry { Key = key, Value = value, HashCode = hash };
+                var entry = new Entry { Key = key, Value = value, HashCode = hash, Next = -1 };
                 this.entries[count] = entry;
                 if (lastIndex != -1 && !object.ReferenceEquals(entries[lastIndex].Key, null))
                 {
