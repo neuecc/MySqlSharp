@@ -155,7 +155,7 @@ namespace MySqlSharp.Internal
                 }
 
                 var newArray = new char[num];
-                Buffer.BlockCopy(bytes, 0, newArray, 0, bytes.Length);
+                Buffer.BlockCopy(bytes, 0, newArray, 0, bytes.Length * sizeof(char));
                 bytes = newArray;
             }
         }
