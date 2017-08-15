@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MySqlSharp.Protocol;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data.Common;
@@ -8,13 +9,41 @@ namespace MySqlSharp.Data
 {
     public class MySqlDataReader : DbDataReader
     {
-        public override object this[int ordinal] => throw new NotImplementedException();
+        readonly TextResultSet resultSet;
+        Dictionary<string, int> __ordinalLookup;
 
-        public override object this[string name] => throw new NotImplementedException();
+        // TODO:test
+        public MySqlDataReader(TextResultSet resultSet)
+        {
+            this.resultSet = resultSet;
+        }
 
-        public override int Depth => throw new NotImplementedException();
+        Dictionary<string, int> OrdinalLookup
+        {
+            get
+            {
+                if (__ordinalLookup == null)
+                {
+                    __ordinalLookup = new Dictionary<string, int>(resultSet.ColumnDefinitions.Length);
 
-        public override int FieldCount => throw new NotImplementedException();
+                    for (int i = 0; i < resultSet.ColumnDefinitions.Length; i++)
+                    {
+                        __ordinalLookup.Add(resultSet.ColumnDefinitions[i].Column, i);
+                    }
+                }
+
+                return __ordinalLookup;
+            }
+        }
+
+
+        public override object this[int ordinal] => resultSet.GetValue(ordinal);
+
+        public override object this[string name] => resultSet.GetValue(GetOrdinal(name));
+
+        public override int Depth => throw new NotSupportedException();
+
+        public override int FieldCount => resultSet.ColumnCount;
 
         public override bool HasRows => throw new NotImplementedException();
 
@@ -69,7 +98,15 @@ namespace MySqlSharp.Data
 
         public override IEnumerator GetEnumerator()
         {
-            throw new NotImplementedException();
+            while (resultSet.Read())
+            {
+                var xs = new object[resultSet.ColumnCount];
+                for (int i = 0; i < xs.Length; i++)
+                {
+                    xs[i] = resultSet.GetValue(i);
+                }
+                yield return xs;
+            }
         }
 
         public override Type GetFieldType(int ordinal)
@@ -104,12 +141,12 @@ namespace MySqlSharp.Data
 
         public override string GetName(int ordinal)
         {
-            throw new NotImplementedException();
+            return resultSet.ColumnDefinitions[ordinal].Column;
         }
 
         public override int GetOrdinal(string name)
         {
-            throw new NotImplementedException();
+            return OrdinalLookup[name];
         }
 
         public override string GetString(int ordinal)
@@ -119,7 +156,7 @@ namespace MySqlSharp.Data
 
         public override object GetValue(int ordinal)
         {
-            throw new NotImplementedException();
+            return resultSet.GetValue(ordinal);
         }
 
         public override int GetValues(object[] values)
@@ -139,7 +176,7 @@ namespace MySqlSharp.Data
 
         public override bool Read()
         {
-            throw new NotImplementedException();
+            return resultSet.Read();
         }
     }
 }

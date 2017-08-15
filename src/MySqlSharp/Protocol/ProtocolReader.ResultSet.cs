@@ -89,12 +89,12 @@ namespace MySqlSharp.Protocol
 
     public class ColumnDefinition41
     {
-        ArraySegment<byte> catalog;
-        ArraySegment<byte> schema;
-        ArraySegment<byte> table;
-        ArraySegment<byte> originalTable;
-        ArraySegment<byte> column;
-        ArraySegment<byte> originalColumn;
+        internal ArraySegment<byte> catalog;
+        internal ArraySegment<byte> schema;
+        internal ArraySegment<byte> table;
+        internal ArraySegment<byte> originalTable;
+        internal ArraySegment<byte> column;
+        internal ArraySegment<byte> originalColumn;
 
         public string Catalog => Encoding.UTF8.GetString(catalog.Array, catalog.Offset, catalog.Count);
         public string Schema => Encoding.UTF8.GetString(schema.Array, schema.Offset, schema.Count);
@@ -195,7 +195,7 @@ namespace MySqlSharp.Protocol
 
         public abstract object GetValue(int ordinal);
 
-        public IEnumerator<KeyValuePair<ColumnDefinition41, object>[]> ToEnumerable()
+        public IEnumerable<KeyValuePair<ColumnDefinition41, object>[]> ToEnumerable()
         {
             while (Read())
             {
@@ -250,6 +250,12 @@ namespace MySqlSharp.Protocol
         public override object GetValue(int ordinal)
         {
             throw new NotImplementedException();
+        }
+
+
+        public void ReadToEnd()
+        {
+            while (Read()) { }
         }
     }
 

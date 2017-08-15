@@ -250,5 +250,14 @@ namespace MySqlSharp
             var set = ProtocolReader.ReadBinaryResultSet(ref reader);
             return set;
         }
+
+        // Transaction
+
+        public TransactionController BeginTransaction()
+        {
+            var transaction = new TransactionController(this);
+            transaction.StartTransaction();
+            return transaction;
+        }
     }
 }

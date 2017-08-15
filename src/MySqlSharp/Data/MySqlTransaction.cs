@@ -8,18 +8,31 @@ namespace MySqlSharp.Data
 {
     public class MySqlTransaction : DbTransaction
     {
+        readonly MySqlConnection conn;
+        readonly TransactionController controller;
+
         public override IsolationLevel IsolationLevel => throw new NotImplementedException();
 
         protected override DbConnection DbConnection => throw new NotImplementedException();
 
+        public MySqlTransaction(MySqlConnection conn, TransactionController controller)
+        {
+            //TODO:...
+        }
+
         public override void Commit()
         {
-            throw new NotImplementedException();
+            controller.Commit();
         }
 
         public override void Rollback()
         {
-            throw new NotImplementedException();
+            controller.Rollback();
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            controller.Dispose();
         }
     }
 }

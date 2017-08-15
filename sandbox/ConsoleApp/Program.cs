@@ -1,4 +1,5 @@
 ﻿using MySqlSharp;
+using MySqlSharp.Mapper;
 using MySqlSharp.Data;
 using MySqlSharp.Protocol;
 using System;
@@ -21,9 +22,18 @@ namespace ConsoleApp
                 UserId = "",
                 Password = "",
             };
+            
 
 
 
+            var driver = new MySqlDriver(option);
+            driver.Open();
+
+            var reader = driver.Query<long>($"select 1543535353 as aaa, 1234213, 21313");
+
+
+            
+            
 
 
             //var nextReader = reader.CreateNextReader();
