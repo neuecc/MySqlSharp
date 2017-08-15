@@ -27,16 +27,24 @@ namespace MySqlSharp.Internal
             {
                 if (s[i] == '{')
                 {
-                    i++;
-                    var argCount = 0;
-                    while (s[i] != '}')
+                    if (s[i + 1] == '{')
                     {
-                        argBuffer[argCount++] = s[i++];
+                        buffer[index++] = '{';
+                        i += 2;
                     }
-                    var argIndex = FormatArgumentToInt32(argBuffer, argCount);
-                    var argValue = sql.GetArgument(argIndex);
-                    WriteParameter(ref buffer, ref index, argValue, ref finalLength);
-                    i++;
+                    else
+                    {
+                        i++;
+                        var argCount = 0;
+                        while (s[i] != '}')
+                        {
+                            argBuffer[argCount++] = s[i++];
+                        }
+                        var argIndex = FormatArgumentToInt32(argBuffer, argCount);
+                        var argValue = sql.GetArgument(argIndex);
+                        WriteParameter(ref buffer, ref index, argValue, ref finalLength);
+                        i++;
+                    }
                 }
                 else
                 {
