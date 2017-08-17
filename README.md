@@ -4,7 +4,11 @@ Extremely Fast MySQL Driver for C#, work in progress.
 
 Async does not mean fast, I thought database driver is the serialization problem over TCP. I've released two fastest serializers [ZeroFormatter](https://github.com/neuecc/ZeroFormatter) and [MessagePack for C#](https://github.com/neuecc/MessagePack-CSharp), this MySQL driver is using there optimization techiniques.
 
-![image](https://user-images.githubusercontent.com/46207/29018376-ce3ecba0-7b95-11e7-90f0-d32d7c80b04b.png)
+| Method              |     Mean | Error |  Gen 0 | Allocated |
+|---------------------|---------:|------:|-------:|----------:|
+| MySqlSharp          | 893.2 us |    NA |      - |     968 B |
+| MySqlConnector      | 863.0 us |    NA | 9.7656 |   69153 B |
+| AsyncMysqlConnector | 843.8 us |    NA | 5.8594 |   47000 B |
 
 It shows 1/50 memory usage decrease(not optimized yet, I should reduce means perfs)
 
