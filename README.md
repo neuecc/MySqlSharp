@@ -100,7 +100,7 @@ Expose [MySQL Protocol](http://imysql.com/mysql-internal-manual/text-protocol.ht
 var driver = new MySqlDriver(option);
 driver.Open();
 
-var reader = driver.Query("selct 1"); // COM_QUERY
+var reader = driver.Query("select 1"); // COM_QUERY
 while (reader.Read())
 {
     var v = reader.GetInt32(0);
