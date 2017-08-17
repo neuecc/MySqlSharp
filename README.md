@@ -24,7 +24,7 @@ Performance enhancements
 * Directly deserialize from binary to number.
 * Avoid ADO.NET abstraction, expose primitive API and ADO.NET should be built on top of it.
 * Micro ORM(like Dapper) built on top of primitive MySQL API.
-* Fast query text parsing deliver with `ref char[]` buffer(avoiding usage of `StringBuilder` and `String`) - [FastQueryParser](https://github.com/neuecc/MySqlSharp/blob/master/src/MySqlSharp/Internal/FastQueryParser.cs).
+* Fast query text parsing with `ref char[]` buffer(avoiding usage of `StringBuilder` and `String`) - [FastQueryParser](https://github.com/neuecc/MySqlSharp/blob/master/src/MySqlSharp/Internal/FastQueryParser.cs).
 * Use prepared-statement cache like [Npgsql approach](http://www.roji.org/prepared-statements-in-npgsql-3-2).
 
 MySQL [X-Protocol](https://dev.mysql.com/doc/internals/en/x-protocol.html) increases server-client performance but [Amazon Aurora](https://aws.amazon.com/rds/aurora/details/) and other services do not implement X-Protocol yet.
