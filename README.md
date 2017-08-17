@@ -2,7 +2,9 @@ MySqlSharp
 ===
 Extremely Fast MySQL Driver for C#, work in progress.
 
-Async does not mean fast, I thought database driver is the serialization problem over TCP. I've released two fastest serializers [ZeroFormatter](https://github.com/neuecc/ZeroFormatter) and [MessagePack for C#](https://github.com/neuecc/MessagePack-CSharp), this MySQL driver is using there optimization techiniques.
+Async does not make code magically fast, rather it is a nice and performant tool to handle concurrency.
+One of the biggest performance sinks in database drivers is serialization.
+I've released the two fastest serializers [ZeroFormatter](https://github.com/neuecc/ZeroFormatter) and [MessagePack for C#](https://github.com/neuecc/MessagePack-CSharp) for .NET, this MySQL driver is using the same optimization techniques.
 
 | Method              |     Mean | Error |  Gen 0 | Allocated |
 |---------------------|---------:|------:|-------:|----------:|
@@ -10,55 +12,60 @@ Async does not mean fast, I thought database driver is the serialization problem
 | MySqlConnector      | 863.0 us |    NA | 9.7656 |   69153 B |
 | AsyncMysqlConnector | 843.8 us |    NA | 5.8594 |   47000 B |
 
-It shows 1/50 memory usage decrease(not optimized yet, I should reduce means perfs)
+The graph shows that this library uses 50 times less memory than other similar libraries (runtime speed has not been optimized yet)
 
-Currently this driver is under development and is not filled with alpha version. However, I am glad if there is your attention and opinion.
+Currently this driver is under development and has not reached alpha status yet.
+However, I will be glad if it receives attention and I would like to hear your opinion.
 
-How achive performance?
+Performance enhancements
 ---
-* Async over Sync, Sync over Async, both slows. We should implementes optimized for both.
-* Use Mutable Struct Reader, it enables reduce memory allocation.
-* Direct deserialize from binary to number.
-* Avoid ADO.NET abstrtaction, expose primitive api and ADO.NET should be built on top of it.
+* Synchronous and Asynchronous code doesn't make the code fast, optimizations should be done for both.
+* Extensive use of Value Types, usage of structs for parser state allows for reduction of memory allocations.
+* Directly deserialize from binary to number.
+* Avoid ADO.NET abstraction, expose primitive API and ADO.NET should be built on top of it.
 * Micro ORM(like Dapper) built on top of primitive MySQL API.
-* Fast query text parsing deliver with `ref char[]` buffer(don't use `StringBuilder` and `String`) - [FastQueryParser](https://github.com/neuecc/MySqlSharp/blob/master/src/MySqlSharp/Internal/FastQueryParser.cs).
+* Fast query text parsing deliver with `ref char[]` buffer(avoiding usage of `StringBuilder` and `String`) - [FastQueryParser](https://github.com/neuecc/MySqlSharp/blob/master/src/MySqlSharp/Internal/FastQueryParser.cs).
 * Use prepared-statement cache like [Npgsql approach](http://www.roji.org/prepared-statements-in-npgsql-3-2).
 
-MySQL [X-Protocol](https://dev.mysql.com/doc/internals/en/x-protocol.html) increase server-client performance but [Amazon Aurora](https://aws.amazon.com/rds/aurora/details/) or others can not use X-Protocol yet.
+MySQL [X-Protocol](https://dev.mysql.com/doc/internals/en/x-protocol.html) increases server-client performance but [Amazon Aurora](https://aws.amazon.com/rds/aurora/details/) and other services do not implement X-Protocol yet.
 
-Mutable Struct Reader
+Struct Packet Reader
 ---
-MySQL protocol stream has many chunked packets. If you make(or as MySQLConnecto does) packet reader, requires many reader allocation.
+The MySQL protocol stream has many chunked packets.
+If a packet reader class is instantiated for every packet (as MySQLConnector does), it will result in many allocations.
 
 ![image](https://user-images.githubusercontent.com/46207/29018333-a8902444-7b95-11e7-8215-d4e0000e0fac.png)
 
-I've implements struct packet reader and static helper methods.
+This library tries to avoid allocations by saving the state of the packet reader in a struct and utilizing static helper methods.
 
 ```csharp
-// Standard API, I don't use it
+// Standard API, used by conventional libraries
 using (var packetReader = new PacketReader())
 using (var protocolReader = new ProtocolReader(packetReader))
 {
     protocolReader.ReadTextResultSet();
 }
 
-// Mutable Struct Reader
-var reader = new PacketReader(); // struct but mutable, has reading(offset) state
-ProtocolReader.ReadTextResultSet(ref reader); // (ref PacketReader)
+// Struct Packet Reader
+var reader = new PacketReader(); // has reading(offset) state
+ProtocolReader.ReadTextResultSet(ref reader); // (ref PacketReader) modifies the struct
 ```
 
-It reduce many memory allocations.
+Using structs instead of instantiating objects reduces memory allocation a lot.
 
-Direct deserialize from binary to number
+Direct deserialization from binary to number
 ---
-MySQL row data is normaly text protocol. If retrieve integer, requires string encoding and parsing.
+MySQL row data is normally represented in text when being sent from the server to the client.
+An integer for example is transferred literally as a string of ASCII symbols.
+If the server wants to send the integer 10 to the client, it sends "10", or [49, 48] if it is represented as a byte sequence.
+This normally requires string encoding and parsing, like in the following example:
 
 ```csharp
-// string allocation and parsing cost
+// has an additional string allocation and parsing cost
 int.Parse(Encoding.UTF8.GetString(binary));
 ```
 
-I've introduced [NumberConverter](https://github.com/neuecc/MySqlSharp/blob/master/src/MySqlSharp/Internal/NumberConverter.cs) it enables direct convert. 
+However MySqlSharp uses a [NumberConverter](https://github.com/neuecc/MySqlSharp/blob/master/src/MySqlSharp/Internal/NumberConverter.cs) to directly convert it to a number.
 
 ```csharp
 public static Int32 ToInt32(byte[] bytes, int offset, int count)
